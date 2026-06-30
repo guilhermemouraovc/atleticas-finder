@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior: smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Core — AI Consulting that builds, not just advises</title>
+  <meta name="description" content="Core is a two-person AI consultancy. We find the real problems, quantify them, and build working solutions. No slide decks — working prototypes.">
+
+  <!-- Favicon (replace with your own) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23000'/><circle cx='12' cy='16' r='8' stroke='white' stroke-width='1.5' fill='none'/><circle cx='20' cy='16' r='8' stroke='white' stroke-width='1.5' fill='none'/></svg>">
+  <link rel="apple-touch-icon" href="img/og-image.png">
+  <link rel="canonical" href="https://example.com/">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Core — AI Consulting that builds, not just advises">
+  <meta property="og:description" content="Core is a two-person AI consultancy. We find the real problems, quantify them, and build working solutions.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://example.com">
+  <meta property="og:image" content="https://example.com/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Core — AI Consulting that builds, not just advises">
+  <meta name="twitter:description" content="Core is a two-person AI consultancy. We find the real problems, quantify them, and build working solutions.">
+  <meta name="twitter:image" content="https://example.com/img/og-image.png">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Core",
+    "url": "https://example.com",
+    "description": "AI consulting that builds, not just advises.",
+    "logo": "https://example.com/img/og-image.png",
+    "founder": [
+      { "@type": "Person", "name": "Lisa Bergmann", "jobTitle": "Co-founder & CTO" },
+      { "@type": "Person", "name": "Sarah Chen", "jobTitle": "Co-founder & CEO" }
+    ]
+  }
+  </script>
+
+  <!-- Font preload for critical rendering -->
+  <link rel="preload" href="fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- Fonts are loaded via CSS @font-face -->
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    dialog[open] { display: flex; flex-direction: column; animation: modal-in 0.25s ease-out; }
+    dialog::backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); animation: backdrop-in 0.25s ease-out; }
+    @keyframes timeline-pulse { 0%, 100% { box-shadow: 0 0 8px rgba(255,255,255,0.6), 0 0 20px rgba(255,255,255,0.3); } 50% { box-shadow: 0 0 14px rgba(255,255,255,0.8), 0 0 30px rgba(255,255,255,0.4); } }
+    @keyframes modal-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+  <script src="js/main.js" defer></script>
+</head>
+<body class="font-sans antialiased">
+
+  <!-- Skip to content -->
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md">
+    Skip to content
+  </a>
+
+  <!-- ===== Navigation ===== -->
+  <header id="main-header" class="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md transition-[border-color] duration-300" style="border-bottom: 1px solid transparent">
+    <nav id="main-nav" class="relative mx-auto flex max-w-5xl items-center justify-between px-6 pt-12 pb-0 transition-[padding] duration-300">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 text-xl font-bold tracking-tight">
+        <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1"/><circle cx="18" cy="10" r="9" stroke="currentColor" stroke-width="1"/></svg>
+        Core
+      </a>
+
+      <!-- Desktop links (centered) -->
+      <div class="hidden items-center gap-8 md:flex absolute left-1/2 -translate-x-1/2">
+        <a href="#about" class="text-sm text-muted-foreground hover:text-foreground transition-colors">About</a>
+        <a href="#features" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Approach</a>
+        <a href="#team" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Team</a>
+        <a href="#pricing" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
+        <a href="#contact" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</a>
+      </div>
+
+      <!-- CTA Button -->
+      <a href="#contact" class="hidden md:inline-flex items-center rounded-full bg-white px-5 py-2 text-sm font-medium text-black hover:bg-white/90 transition-opacity">Talk to us</a>
+
+      <!-- Mobile menu button -->
+      <button id="mobile-menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu" class="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors md:hidden">
+        <span class="sr-only">Open menu</span>
+        <svg aria-hidden="true" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+      </button>
+    </nav>
+
+    <!-- Mobile menu -->
+    <div id="mobile-menu" aria-hidden="true" class="hidden border-t border-border bg-background px-6 py-4 md:hidden">
+      <div class="flex flex-col gap-4">
+        <a href="#about" class="text-sm text-muted-foreground hover:text-foreground transition-colors">About</a>
+        <a href="#features" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Approach</a>
+        <a href="#team" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Team</a>
+        <a href="#pricing" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
+        <a href="#contact" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ===== Hero Section ===== -->
+    <section id="about" class="py-[calc(32px+5vh)]">
+      <!-- Headline + CTA — two column layout -->
+      <div class="mx-auto max-w-5xl px-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3" data-animate>
+          <div class="lg:col-span-2">
+            <span class="inline-block rounded-full border border-white/30 px-4 py-1.5 text-xs font-medium tracking-wide mb-6">AI Consulting</span>
+            <h1 class="text-4xl font-medium tracking-tight sm:text-5xl lg:text-6xl">
+              We find the problem. We build the fix. We prove it works.
+            </h1>
+            <p class="mt-6 max-w-xl text-lg text-muted-foreground">
+              Core is a two-person AI consultancy that goes deep into organizations, identifies the real bottlenecks, and delivers working solutions — not slide decks.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero image — wider container, breaks out, gradient box -->
+      <div id="hero-gradient-wrap" class="mx-auto px-6 mt-12 md:mt-16" style="max-width: 1152px" data-animate data-delay="1">
+        <div class="rounded-2xl p-8 md:p-16 flex items-center justify-center" style="background: linear-gradient(to top, rgba(128,134,145,0.3), transparent)">
+          <svg class="w-full max-w-3xl" viewBox="0 0 370 220" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="ring-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="white" stop-opacity="0.85"/><stop offset="50%" stop-color="white" stop-opacity="0.08"/><stop offset="100%" stop-color="white" stop-opacity="0.85"/>
+              </linearGradient>
+              <linearGradient id="ring-grad-2" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="white" stop-opacity="0.85"/><stop offset="50%" stop-color="white" stop-opacity="0.08"/><stop offset="100%" stop-color="white" stop-opacity="0.85"/>
+              </linearGradient>
+              <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="5" stroke="white" stroke-width="0.5" opacity="0.1"/>
+              </pattern>
+              <clipPath id="clip-right"><circle cx="260" cy="110" r="95"/></clipPath>
+              <filter id="knob-glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <!-- Overlap zone: hatch + glow -->
+            <circle cx="110" cy="110" r="95" fill="url(#hatch)" clip-path="url(#clip-right)"/>
+            <circle cx="110" cy="110" r="95" fill="white" opacity="0" clip-path="url(#clip-right)" id="overlap-glow"/>
+            <!-- Circle 1 (left) -->
+            <g class="hero-ring-1">
+              <circle cx="110" cy="110" r="95" stroke="url(#ring-grad-1)" stroke-width="0.75" fill="none"/>
+              <g class="hero-knob" filter="url(#knob-glow)">
+                <circle cx="110" cy="15" r="4" fill="white" opacity="0.15"/>
+                <circle cx="110" cy="15" r="1.5" fill="white"/>
+              </g>
+            </g>
+            <!-- Circle 2 (right) -->
+            <g class="hero-ring-2">
+              <circle cx="260" cy="110" r="95" stroke="url(#ring-grad-2)" stroke-width="0.75" fill="none"/>
+              <g class="hero-knob" filter="url(#knob-glow)">
+                <circle cx="260" cy="205" r="4" fill="white" opacity="0.15"/>
+                <circle cx="260" cy="205" r="1.5" fill="white"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Below image — normal container, 1/3 + 2/3 -->
+      <div class="mx-auto max-w-5xl px-6">
+        <div class="mt-12 grid gap-8 md:mt-16 md:grid-cols-3 md:gap-12" data-animate data-delay="2">
+          <div>
+            <h2 class="text-2xl font-medium tracking-tight sm:text-3xl">A new kind of consulting</h2>
+            <div class="mt-6 flex items-center">
+              <img src="img/teammember11.webp" alt="Lisa Bergmann" width="1024" height="1024" loading="lazy" class="h-12 w-12 rounded-full object-cover ring-2 ring-background">
+              <img src="img/teammember3.webp" alt="Sarah Chen" width="1024" height="1024" loading="lazy" class="h-12 w-12 rounded-full object-cover ring-2 ring-background -ml-3">
+            </div>
+          </div>
+          <div class="md:col-span-2">
+            <p class="text-lg font-medium text-foreground leading-relaxed">
+              Most consultants tell you what's wrong. We show you it's fixed.
+            </p>
+            <p class="mt-4 text-muted-foreground leading-relaxed">
+              Core was founded by Lisa Bergmann and Sarah Chen — a technologist who thinks in products and a strategist who thinks in systems. Two very different minds, united by a shared obsession: understanding users and leveraging AI to solve real problems.
+            </p>
+            <p class="mt-4 text-muted-foreground leading-relaxed">
+              We work across department lines. We quantify what others describe with adjectives. And when we find the biggest lever, we don't hand you a report — we build the solution, deploy it, and prove it works. Then we hand it over.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Trust / Logo Bar ===== -->
+    <section aria-label="Trusted by leading companies" class="border-y border-border py-[calc(24px+4vh)]">
+      <div class="mx-auto max-w-5xl px-6">
+        <div class="grid grid-cols-3 text-foreground" data-animate="fade">
+          <!-- Arcline -->
+          <div class="flex items-center justify-center border-r border-b border-border py-8">
+            <svg class="h-7" viewBox="0 0 100 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M0 22C0 10 8 4 16 4s12 4 12 10c0 4-3 7-7 7s-6-2-6-5 2-4 4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M36 21V9h1.4l.2 2c.8-1.4 2.2-2.2 4-2.2v1.8h-.4c-2 0-3.4 1.2-3.4 3.6V21H36zm11.4.2c-2.6 0-4.4-1.8-4.4-4.4V9h1.8v7.4c0 1.8 1 3 2.8 3s3-1.4 3-3.2V9h1.8v12h-1.4l-.2-1.8c-.8 1.2-2 2-3.4 2zM56 21V9h1.4l.2 2c.8-1.4 2.2-2.2 4-2.2v1.8h-.4c-2 0-3.4 1.2-3.4 3.6V21H56zm13 .2c-3.4 0-5.6-2.6-5.6-6.2s2.2-6.2 5.6-6.2c2 0 3.4.8 4.2 2l-1.2 1c-.6-.8-1.6-1.4-3-1.4-2.4 0-3.8 1.8-3.8 4.6s1.4 4.6 3.8 4.6c1.4 0 2.4-.6 3-1.4l1.2 1c-.8 1.2-2.2 2-4.2 2z"/></svg>
+          </div>
+          <!-- Solara -->
+          <div class="flex items-center justify-center border-r border-b border-border py-8">
+            <svg class="h-7" viewBox="0 0 110 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="14" cy="14" r="10" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M10 14h8M14 10v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M34 21.2c-1.6 0-3-.6-4-1.6l1-1.2c.8.8 1.8 1.2 3 1.2 1.4 0 2-.6 2-1.4 0-.8-.6-1.2-2.4-1.6-2.2-.5-3.4-1.2-3.4-3 0-1.8 1.4-3 3.6-3 1.4 0 2.6.5 3.4 1.2l-1 1.2c-.6-.6-1.5-1-2.4-1-1.2 0-1.8.5-1.8 1.3 0 .8.6 1.1 2.4 1.6 2.2.5 3.4 1.2 3.4 3 0 1.8-1.5 3.1-3.8 3.1zM44.6 21.2c-3.4 0-5.6-2.6-5.6-6.2s2.2-6.2 5.6-6.2 5.6 2.6 5.6 6.2-2.2 6.2-5.6 6.2zm0-1.6c2.4 0 3.8-1.8 3.8-4.6s-1.4-4.6-3.8-4.6-3.8 1.8-3.8 4.6 1.4 4.6 3.8 4.6zM54 21V3h1.8v18H54z"/></svg>
+          </div>
+          <!-- Pavelock -->
+          <div class="flex items-center justify-center border-b border-border py-8">
+            <svg class="h-7" viewBox="0 0 120 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h8l8 20H12L4 4z" fill="currentColor" opacity="0.6"/><path d="M12 4h8l8 20H20L12 4z" fill="currentColor"/><path d="M38 21V9h1.4l.2 2c.8-1.4 2.2-2.2 4-2.2 2.6 0 4.2 1.8 4.2 4.6V21H46v-7.2c0-2-1-3.2-2.8-3.2s-3.2 1.4-3.2 3.4V21H38zm15 0V9h1.4l.2 2c.8-1.4 2-2.2 3.6-2.2 1.4 0 2.4.6 3 1.8.8-1.2 2.2-1.8 3.6-1.8 2.4 0 3.8 1.6 3.8 4.4V21h-1.8v-7.2c0-2-.8-3.2-2.4-3.2-1.6 0-2.8 1.4-2.8 3.4V21h-1.8v-7.2c0-2-.8-3.2-2.4-3.2-1.6 0-2.8 1.4-2.8 3.4V21H53z"/></svg>
+          </div>
+          <!-- Nimbus -->
+          <div class="flex items-center justify-center border-r border-border py-8">
+            <svg class="h-7" viewBox="0 0 100 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M2 20L8 6l6 14H2z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/><path d="M5 14h6" stroke="currentColor" stroke-width="1.2"/><path d="M24 21V9h1.4l.2 2c.8-1.4 2.2-2.2 4-2.2 2.6 0 4.2 1.8 4.2 4.6V21H32v-7.2c0-2-1-3.2-2.8-3.2s-3.2 1.4-3.2 3.4V21H24zm16 0V9h1.4l.2 2c.8-1.4 2-2.2 3.6-2.2 1.4 0 2.4.6 3 1.8.8-1.2 2.2-1.8 3.6-1.8 2.4 0 3.8 1.6 3.8 4.4V21h-1.8v-7.2c0-2-.8-3.2-2.4-3.2-1.6 0-2.8 1.4-2.8 3.4V21h-1.8v-7.2c0-2-.8-3.2-2.4-3.2-1.6 0-2.8 1.4-2.8 3.4V21H40z"/></svg>
+          </div>
+          <!-- Quartex -->
+          <div class="flex items-center justify-center border-r border-border py-8">
+            <svg class="h-7" viewBox="0 0 110 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="6" width="7" height="7" fill="currentColor"/><rect x="11" y="6" width="7" height="7" fill="currentColor" opacity="0.4"/><rect x="2" y="15" width="7" height="7" fill="currentColor" opacity="0.4"/><rect x="11" y="15" width="7" height="7" fill="currentColor"/><path d="M30 21.2c-3.4 0-5.2-2.2-5.2-5.4V9h1.8v6.6c0 2.4 1.2 3.8 3.4 3.8s3.4-1.4 3.4-3.8V9h1.8v6.8c0 3.2-1.8 5.4-5.2 5.4zM41.4 21V3H43v7c.8-1 2-1.6 3.4-1.6 2.6 0 4.2 1.8 4.2 4.6V21h-1.8v-7.2c0-2-1-3.2-2.8-3.2-1.8 0-3.2 1.4-3.2 3.4V21h-1.4z"/></svg>
+          </div>
+          <!-- Wavefront -->
+          <div class="flex items-center justify-center py-8">
+            <svg class="h-7" viewBox="0 0 90 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 18c3-10 5-10 8 0s5 10 8 0" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M32 21L28 9h1.8l2.6 8.4L35.2 9h1.8l2.8 8.4L42.4 9h1.8L40.2 21h-1.6l-2.8-8-2.8 8H32zm20 0V9h1.8v12H52zm7 .2c-3.4 0-5.6-2.6-5.6-6.2s2.2-6.2 5.6-6.2 5.6 2.6 5.6 6.2-2.2 6.2-5.6 6.2zm0-1.6c2.4 0 3.8-1.8 3.8-4.6s-1.4-4.6-3.8-4.6-3.8 1.8-3.8 4.6 1.4 4.6 3.8 4.6z"/></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Approach Zigzag ===== -->
+    <section id="features" class="py-[calc(24px+4vh)]">
+      <div class="mx-auto max-w-5xl px-6 space-y-20 md:space-y-28">
+
+        <!-- Row 1: Text left, Image right — Team Activity -->
+        <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-16" data-animate>
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Discover</p>
+            <h2 class="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Find the problems nobody can name</h2>
+            <p class="mt-4 text-muted-foreground leading-relaxed">We cut across departments, hierarchies, and silos. Not the usual top-down workshop, but real immersion: talking to teams, observing processes, analyzing data. We surface the problems that everyone feels but nobody can articulate.</p>
+          </div>
+          <div class="relative rounded-2xl overflow-hidden h-80 md:h-96 flex items-center justify-center p-6 bg-black" data-fade-bg>
+            <div class="absolute inset-0 transition-opacity duration-100" style="background: url('img/floral1.webp') center/cover no-repeat; opacity: 0.05"></div>
+            <div class="relative w-full max-w-[260px]">
+              <div class="rounded-2xl bg-background p-5 border border-white/10">
+                <div class="flex items-center justify-between mb-5">
+                  <span class="text-[11px] font-semibold text-gray-100">Team Activity</span>
+                  <span class="text-[10px] text-gray-500">Live</span>
+                </div>
+                <div class="space-y-4">
+                  <div class="flex items-start gap-3">
+                    <div class="mt-0.5 h-5 w-5 rounded-full bg-emerald-500/10 flex items-center justify-center flex-shrink-0"><div class="h-1.5 w-1.5 rounded-full bg-emerald-500"></div></div>
+                    <div><p class="text-[11px] font-medium text-gray-200">Deploy <span class="text-gray-500 font-normal">v2.4.1</span> succeeded</p><p class="text-[9px] text-gray-500 mt-0.5">2 min ago</p></div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <div class="mt-0.5 h-5 w-5 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0"><div class="h-1.5 w-1.5 rounded-full bg-blue-500"></div></div>
+                    <div><p class="text-[11px] font-medium text-gray-200">PR #218 merged to <span class="font-mono text-[10px] bg-white/10 rounded px-1">main</span></p><p class="text-[9px] text-gray-500 mt-0.5">8 min ago</p></div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <div class="mt-0.5 h-5 w-5 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0"><div class="h-1.5 w-1.5 rounded-full bg-amber-500"></div></div>
+                    <div><p class="text-[11px] font-medium text-gray-200">Build queued — <span class="text-gray-500 font-normal">staging</span></p><p class="text-[9px] text-gray-500 mt-0.5">12 min ago</p></div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <div class="mt-0.5 h-5 w-5 rounded-full bg-violet-500/10 flex items-center justify-center flex-shrink-0"><div class="h-1.5 w-1.5 rounded-full bg-violet-500"></div></div>
+                    <div><p class="text-[11px] font-medium text-gray-200">New comment on <span class="text-gray-500 font-normal">#214</span></p><p class="text-[9px] text-gray-500 mt-0.5">25 min ago</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Image left, Text right — Uptime Monitor -->
+        <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-16" data-animate>
+          <div class="relative rounded-2xl overflow-hidden h-80 md:h-96 flex items-center justify-center p-6 lg:order-none order-last bg-black" data-fade-bg>
+            <div class="absolute inset-0 transition-opacity duration-100" style="background: url('img/floral4.webp') center/cover no-repeat; opacity: 0.05"></div>
+            <div class="relative w-full max-w-[260px]">
+              <div class="rounded-2xl bg-background p-5 border border-white/10">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[11px] font-semibold text-gray-100">Uptime</span>
+                  <span class="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[9px] font-semibold text-emerald-400">Healthy</span>
+                </div>
+                <p class="text-3xl font-bold text-gray-100 tracking-tight">99.98<span class="text-lg text-gray-500">%</span></p>
+                <p class="text-[10px] text-gray-500 mt-1">Last 90 days</p>
+                <div class="mt-4 flex gap-[3px]">
+                  <div class="h-6 w-full rounded-sm bg-emerald-500"></div><div class="h-6 w-full rounded-sm bg-emerald-500"></div><div class="h-6 w-full rounded-sm bg-emerald-500"></div><div class="h-6 w-full rounded-sm bg-emerald-500"></div><div class="h-6 w-full rounded-sm bg-emerald-500"></div><div class="h-6 w-full rounded-sm bg-emerald-500"></div><div class="h-6 w-full rounded-sm bg-amber-400"></div><div class="h-6 w-full rounded-sm bg-emerald-500"></div><div class="h-6 w-full rounded-sm bg-emerald-500"></div><div class="h-6 w-full rounded-sm bg-emerald-500"></div><div class="h-6 w-full rounded-sm bg-emerald-500"></div><div class="h-6 w-full rounded-sm bg-emerald-500"></div><div class="h-6 w-full rounded-sm bg-emerald-500"></div><div class="h-6 w-full rounded-sm bg-emerald-500"></div>
+                </div>
+                <div class="mt-3 grid grid-cols-3 gap-2">
+                  <div class="rounded-lg bg-white/5 p-2 text-center"><p class="text-xs font-bold text-gray-100">42ms</p><p class="text-[9px] text-gray-500">Avg latency</p></div>
+                  <div class="rounded-lg bg-white/5 p-2 text-center"><p class="text-xs font-bold text-gray-100">2.1M</p><p class="text-[9px] text-gray-500">Requests</p></div>
+                  <div class="rounded-lg bg-white/5 p-2 text-center"><p class="text-xs font-bold text-gray-100">0</p><p class="text-[9px] text-gray-500">Incidents</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Quantify</p>
+            <h2 class="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Make every problem measurable</h2>
+            <p class="mt-4 text-muted-foreground leading-relaxed">Gut feelings don't survive budget meetings. We quantify and qualify every problem we find. What does it cost the business? How many people does it affect? Where's the biggest lever? Data-driven prioritization, not PowerPoint intuition.</p>
+          </div>
+        </div>
+
+        <!-- Row 3: Text left, Image right — Spend Breakdown -->
+        <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-16" data-animate>
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Build</p>
+            <h2 class="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Ship the solution, prove it works</h2>
+            <p class="mt-4 text-muted-foreground leading-relaxed">This is where we're different. We don't stop at recommendations. We design the solution, build it, deploy it, and measure the results. Prototype, pilot, proof. Only then do we hand it over. No "you should probably do X" — we do X.</p>
+          </div>
+          <div class="relative rounded-2xl overflow-hidden h-80 md:h-96 flex items-center justify-center p-6 bg-black" data-fade-bg>
+            <div class="absolute inset-0 transition-opacity duration-100" style="background: url('img/floral7.webp') center/cover no-repeat; opacity: 0.05"></div>
+            <div class="relative w-full max-w-[260px]">
+              <div class="rounded-2xl bg-background p-5 border border-white/10">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-[11px] font-semibold text-gray-100">Monthly Spend</span>
+                  <span class="text-[10px] text-gray-500">Apr 2026</span>
+                </div>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-2xl font-bold text-gray-100 tracking-tight">$4,280</span>
+                  <span class="text-[10px] text-emerald-400 font-semibold">-12%</span>
+                </div>
+                <div class="mt-4 h-3 w-full rounded-full bg-white/10 flex overflow-hidden">
+                  <div class="h-full bg-white rounded-l-full" style="width: 45%"></div>
+                  <div class="h-full bg-gray-400" style="width: 28%"></div>
+                  <div class="h-full bg-gray-500" style="width: 17%"></div>
+                  <div class="h-full bg-gray-600 rounded-r-full" style="width: 10%"></div>
+                </div>
+                <div class="mt-4 space-y-2.5">
+                  <div class="flex items-center justify-between"><div class="flex items-center gap-2"><div class="h-2 w-2 rounded-full bg-white"></div><span class="text-[10px] text-gray-400">Compute</span></div><span class="text-[11px] font-semibold text-gray-100">$1,926</span></div>
+                  <div class="flex items-center justify-between"><div class="flex items-center gap-2"><div class="h-2 w-2 rounded-full bg-gray-400"></div><span class="text-[10px] text-gray-400">Bandwidth</span></div><span class="text-[11px] font-semibold text-gray-100">$1,198</span></div>
+                  <div class="flex items-center justify-between"><div class="flex items-center gap-2"><div class="h-2 w-2 rounded-full bg-gray-500"></div><span class="text-[10px] text-gray-400">Storage</span></div><span class="text-[11px] font-semibold text-gray-100">$728</span></div>
+                  <div class="flex items-center justify-between"><div class="flex items-center gap-2"><div class="h-2 w-2 rounded-full bg-gray-600"></div><span class="text-[10px] text-gray-400">Other</span></div><span class="text-[11px] font-semibold text-gray-100">$428</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== Founders ===== -->
+    <section id="team">
+      <div id="team-gradient-wrap" class="mx-auto px-6" style="max-width: 1152px">
+        <div class="relative rounded-2xl py-[calc(48px+8vh)] px-6 overflow-hidden">
+          <div class="absolute inset-0" style="background: url('img/floral5.webp') center/cover no-repeat"></div>
+          <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent)"></div>
+      <div class="relative mx-auto max-w-5xl">
+        <div class="px-6 md:px-10">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-animate>
+            <!-- Heading -->
+            <div class="flex items-center">
+              <div>
+                <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Our founding duo</h2>
+                <p class="mt-4 text-white/70 leading-relaxed">A technologist who thinks like a designer and a strategist who thinks in systems. Different expertise, shared obsession.</p>
+              </div>
+            </div>
+            <!-- Lisa -->
+            <div class="md:pt-12">
+            <div class="rounded-2xl bg-black overflow-hidden">
+              <div class="bg-white aspect-square overflow-hidden"><img src="img/teammember11.webp" alt="Lisa Bergmann" width="1024" height="1024" loading="lazy" class="w-full h-full object-cover"></div>
+              <div class="p-8 md:p-10">
+                <p class="text-sm font-semibold">Lisa Bergmann</p>
+                <p class="text-sm text-muted-foreground">Co-founder & CTO</p>
+                <p class="mt-3 text-sm text-muted-foreground leading-relaxed">Engineer with a rare eye for product design. Builds systems and interfaces in the same breath. Ex Vercel.</p>
+                <a href="#" class="mt-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                  LinkedIn
+                </a>
+              </div>
+            </div>
+            </div>
+            <!-- Sarah -->
+            <div class="md:pb-12">
+            <div class="rounded-2xl bg-black overflow-hidden">
+              <div class="bg-white aspect-square overflow-hidden"><img src="img/teammember3.webp" alt="Sarah Chen" width="1024" height="1024" loading="lazy" class="w-full h-full object-cover"></div>
+              <div class="p-8 md:p-10">
+                <p class="text-sm font-semibold">Sarah Chen</p>
+                <p class="text-sm text-muted-foreground">Co-founder & CEO</p>
+                <p class="mt-3 text-sm text-muted-foreground leading-relaxed">Strategist who reads business models like source code. Spots where companies leak value. Ex Stripe.</p>
+                <a href="#" class="mt-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                  LinkedIn
+                </a>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Timeline ===== -->
+    <section class="py-[calc(48px+8vh)]">
+      <div class="mx-auto max-w-5xl px-6">
+        <div class="grid grid-cols-1 md:grid-cols-2" style="gap: 6rem">
+          <!-- Left: Sticky heading -->
+          <div class="md:sticky md:top-32 md:self-start">
+            <span class="inline-block rounded-full border border-white/30 px-4 py-1.5 text-xs font-medium tracking-wide mb-6">Our Story</span>
+            <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">From a shared frustration to a new kind of firm</h2>
+            <p class="mt-4 text-muted-foreground leading-relaxed">Lisa and Sarah kept running into the same problem — consultants who diagnosed but never built. In 2024 they decided to do it differently.</p>
+          </div>
+          <!-- Right: Timeline -->
+          <div class="relative" style="padding-left: 2rem">
+            <!-- Vertical line -->
+            <div class="absolute top-0 bottom-0" style="left: 5px; width: 1px; background: linear-gradient(to bottom, var(--color-foreground), var(--color-border))"></div>
+            <!-- 2026 — latest, pulsing -->
+            <div class="relative pb-16" data-animate>
+              <div class="absolute" style="left: -2rem; top: 0.35rem">
+                <div style="width: 11px; height: 11px; border-radius: 50%; background: white; box-shadow: 0 0 8px rgba(255,255,255,0.6), 0 0 20px rgba(255,255,255,0.3); animation: timeline-pulse 2s ease-in-out infinite"></div>
+              </div>
+              <p class="text-sm font-medium text-muted-foreground">2026</p>
+              <h3 class="mt-3 text-base font-semibold">AI-native from day one</h3>
+              <p class="mt-1 text-sm text-muted-foreground leading-relaxed">Every engagement now starts with AI-assisted discovery. We cut diagnostic time in half and deliver prototypes in weeks, not months.</p>
+            </div>
+            <!-- 2025 -->
+            <div class="relative pb-16" data-animate>
+              <div class="absolute" style="left: -2rem; top: 0.35rem">
+                <div style="width: 11px; height: 11px; border-radius: 50%; background: var(--color-muted-foreground)"></div>
+              </div>
+              <p class="text-sm font-medium text-muted-foreground">2025</p>
+              <h3 class="mt-3 text-base font-semibold">First enterprise clients</h3>
+              <p class="mt-1 text-sm text-muted-foreground leading-relaxed">Word spread. Two Fortune 500 companies brought us in to untangle cross-departmental workflows that had stalled for years.</p>
+            </div>
+            <!-- 2024 -->
+            <div class="relative pb-16" data-animate>
+              <div class="absolute" style="left: -2rem; top: 0.35rem">
+                <div style="width: 11px; height: 11px; border-radius: 50%; background: var(--color-muted-foreground)"></div>
+              </div>
+              <p class="text-sm font-medium text-muted-foreground">2024</p>
+              <h3 class="mt-3 text-base font-semibold">Core is founded</h3>
+              <p class="mt-1 text-sm text-muted-foreground leading-relaxed">Lisa and Sarah leave their roles to build the consultancy they always wished existed. First client within three weeks — a logistics company bleeding money on manual processes.</p>
+            </div>
+            <!-- 2022 -->
+            <div class="relative pb-16" data-animate>
+              <div class="absolute" style="left: -2rem; top: 0.35rem">
+                <div style="width: 11px; height: 11px; border-radius: 50%; background: var(--color-muted-foreground)"></div>
+              </div>
+              <p class="text-sm font-medium text-muted-foreground">2022</p>
+              <h3 class="mt-3 text-base font-semibold">The frustration crystallizes</h3>
+              <p class="mt-1 text-sm text-muted-foreground leading-relaxed">Both independently hit the same wall: brilliant consultants who delivered decks, not outcomes. They start talking about what "consulting that actually ships" would look like.</p>
+            </div>
+            <!-- 2018 -->
+            <div class="relative" data-animate>
+              <div class="absolute" style="left: -2rem; top: 0.35rem">
+                <div style="width: 11px; height: 11px; border-radius: 50%; background: var(--color-border)"></div>
+              </div>
+              <p class="text-sm font-medium text-muted-foreground">2018</p>
+              <h3 class="mt-3 text-base font-semibold">Lisa and Sarah meet</h3>
+              <p class="mt-1 text-sm text-muted-foreground leading-relaxed">A conference talk on developer experience sparks a conversation that never really ends. Different worlds — infrastructure and strategy — but the same conviction: build for users, not for org charts.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Pricing ===== -->
+    <section id="pricing">
+      <div id="pricing-gradient-wrap" class="mx-auto px-6" style="max-width: 1152px">
+        <div class="relative rounded-2xl py-[calc(48px+8vh)] px-6 overflow-hidden">
+          <div class="absolute inset-0" style="background: url('img/floral3.webp') center/cover no-repeat"></div>
+          <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(0,0,0,0.65), transparent)"></div>
+      <div class="relative mx-auto max-w-5xl">
+        <div class="px-6 md:px-10">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-animate>
+            <!-- Heading -->
+            <div>
+              <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Simple, transparent pricing</h2>
+              <p class="mt-4 text-white/70 leading-relaxed">No hourly billing, no scope creep surprises. You know what you're paying before we start.</p>
+            </div>
+            <!-- Sprint Week -->
+            <div>
+            <div class="rounded-2xl bg-black overflow-hidden border border-border" style="background-image: radial-gradient(80% 50% at 50% 0%, rgb(26,26,26) 0%, transparent 70%)">
+              <div style="padding: 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.1)">
+                <p class="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Sprint Week</p>
+                <div class="mt-4" style="display: flex; align-items: baseline; gap: 0.25rem">
+                  <span class="text-4xl font-bold tracking-tight">$20,000</span>
+                  <span class="text-sm text-muted-foreground">/ week</span>
+                </div>
+                <p class="mt-3 text-sm text-muted-foreground leading-relaxed">One focused week. One specific problem. We go from discovery to a working prototype, delivered Friday.</p>
+              </div>
+              <div style="padding: 2rem 2.5rem">
+                <ul style="display: flex; flex-direction: column; gap: 0.75rem; list-style: none; padding: 0; margin: 0">
+                  <li class="text-sm text-muted-foreground" style="display: flex; align-items: center; gap: 0.75rem">
+                    <svg style="width: 1rem; height: 1rem; flex-shrink: 0; color: white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    Lisa & Sarah, full week
+                  </li>
+                  <li class="text-sm text-muted-foreground" style="display: flex; align-items: center; gap: 0.75rem">
+                    <svg style="width: 1rem; height: 1rem; flex-shrink: 0; color: white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    Working prototype delivered
+                  </li>
+                  <li class="text-sm text-muted-foreground" style="display: flex; align-items: center; gap: 0.75rem">
+                    <svg style="width: 1rem; height: 1rem; flex-shrink: 0; color: white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    Full handover & documentation
+                  </li>
+                </ul>
+                <a href="#contact" class="mt-6 inline-flex items-center rounded-full border border-white/30 px-5 py-2 text-sm font-medium text-white hover:bg-white/10 transition-colors" style="display: inline-flex">Book a sprint</a>
+              </div>
+            </div>
+            </div>
+            <!-- Custom -->
+            <div class="md:pb-12">
+            <div class="rounded-2xl bg-black overflow-hidden border border-border" style="background-image: radial-gradient(80% 50% at 50% 0%, rgb(26,26,26) 0%, transparent 70%)">
+              <div style="padding: 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.1)">
+                <p class="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Custom Engagement</p>
+                <div class="mt-4">
+                  <span class="text-4xl font-bold tracking-tight">Let's talk</span>
+                </div>
+                <p class="mt-3 text-sm text-muted-foreground leading-relaxed">Larger problems need more time. We scope custom engagements tailored to your organization — from two-week deep dives to quarter-long transformations.</p>
+              </div>
+              <div style="padding: 2rem 2.5rem">
+                <ul style="display: flex; flex-direction: column; gap: 0.75rem; list-style: none; padding: 0; margin: 0">
+                  <li class="text-sm text-muted-foreground" style="display: flex; align-items: center; gap: 0.75rem">
+                    <svg style="width: 1rem; height: 1rem; flex-shrink: 0; color: white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    Scoped to your specific challenge
+                  </li>
+                  <li class="text-sm text-muted-foreground" style="display: flex; align-items: center; gap: 0.75rem">
+                    <svg style="width: 1rem; height: 1rem; flex-shrink: 0; color: white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    Multi-week or multi-month timelines
+                  </li>
+                  <li class="text-sm text-muted-foreground" style="display: flex; align-items: center; gap: 0.75rem">
+                    <svg style="width: 1rem; height: 1rem; flex-shrink: 0; color: white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    Cross-department discovery included
+                  </li>
+                  <li class="text-sm text-muted-foreground" style="display: flex; align-items: center; gap: 0.75rem">
+                    <svg style="width: 1rem; height: 1rem; flex-shrink: 0; color: white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    Production-ready solutions, not reports
+                  </li>
+                  <li class="text-sm text-muted-foreground" style="display: flex; align-items: center; gap: 0.75rem">
+                    <svg style="width: 1rem; height: 1rem; flex-shrink: 0; color: white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    On-site or remote — we adapt to you
+                  </li>
+                  <li class="text-sm text-muted-foreground" style="display: flex; align-items: center; gap: 0.75rem">
+                    <svg style="width: 1rem; height: 1rem; flex-shrink: 0; color: white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    Full handover, documentation & training
+                  </li>
+                </ul>
+                <a href="#contact" class="mt-8 inline-flex items-center rounded-full border border-white/30 px-5 py-2 text-sm font-medium text-white hover:bg-white/10 transition-colors" style="display: inline-flex">Get in touch</a>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Contact ===== -->
+    <section id="contact" class="py-[calc(48px+8vh)]">
+      <div id="contact-card" class="relative mx-auto max-w-2xl text-center rounded-2xl bg-black border border-border p-8 md:p-12" style="box-shadow: 0 -20px 50px -15px rgba(255,255,255,0.05); background-image: radial-gradient(80% 50% at 50% 0%, rgb(26,26,26) 0%, transparent 70%)" data-animate>
+          <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Let's talk</h2>
+          <p class="mt-4 text-lg text-muted-foreground">Tell us what's not working. We'll tell you if we can help — honestly and quickly.</p>
+          <form class="mt-10 space-y-6" action="#" method="post">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label for="first-name" class="block text-sm font-medium">First name</label>
+                <input id="first-name" name="first-name" type="text" required placeholder="Jane" class="mt-2 w-full rounded-md border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground">
+              </div>
+              <div>
+                <label for="last-name" class="block text-sm font-medium">Last name</label>
+                <input id="last-name" name="last-name" type="text" required placeholder="Smith" class="mt-2 w-full rounded-md border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground">
+              </div>
+            </div>
+            <div>
+              <label for="email" class="block text-sm font-medium">Email</label>
+              <input id="email" name="email" type="email" required placeholder="you@company.com" class="mt-2 w-full rounded-md border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground">
+            </div>
+            <div>
+              <label for="message" class="block text-sm font-medium">Message</label>
+              <textarea id="message" name="message" rows="4" required placeholder="Tell us about your project..." class="mt-2 w-full rounded-md border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground resize-y"></textarea>
+            </div>
+            <button type="submit" class="rounded-full bg-white px-6 py-3 text-sm font-medium text-black hover:bg-white/90 transition-opacity">Send message</button>
+          </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="border-t border-border py-12">
+    <div class="mx-auto max-w-5xl px-6">
+      <div class="flex items-center justify-between">
+        <!-- Brand -->
+        <div>
+          <a href="/" class="flex items-center gap-2 text-lg font-bold tracking-tight">
+            <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1"/><circle cx="18" cy="10" r="9" stroke="currentColor" stroke-width="1"/></svg>
+            Core
+          </a>
+          <p class="mt-2 text-sm text-muted-foreground">AI consulting that builds, not just advises.</p>
+        </div>
+        <!-- Legal links -->
+        <div class="flex items-center gap-6 text-sm text-muted-foreground">
+          <button type="button" data-open-dialog="modal-legal" class="hover:text-foreground transition-colors">Legal</button>
+          <button type="button" data-open-dialog="modal-privacy" class="hover:text-foreground transition-colors">Privacy</button>
+        </div>
+        <!-- Social -->
+        <div>
+          <p class="text-sm font-semibold">Connect</p>
+          <div class="mt-3 flex gap-4">
+            <a href="#" class="inline-flex items-center justify-center w-11 h-11 rounded-md text-muted-foreground hover:text-foreground transition-colors" aria-label="GitHub">
+              <svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+            </a>
+            <a href="#" class="inline-flex items-center justify-center w-11 h-11 rounded-md text-muted-foreground hover:text-foreground transition-colors" aria-label="Email">
+              <svg aria-hidden="true" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="mt-12 border-t border-border pt-8 text-center text-sm text-muted-foreground">
+        <p>Made by <a href="https://templatedeck.com" class="hover:text-foreground transition-colors">templatedeck.com</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== Legal Modal ===== -->
+  <dialog id="modal-legal" class="rounded-2xl bg-background text-foreground" style="position: fixed; inset: 0; margin: auto; width: calc(100% - 3rem); max-width: 42rem; max-height: 80vh; padding: 0; overflow: hidden; border: none; font-size: 1rem">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding: 1.5rem 3rem; flex-shrink: 0">
+      <h2 style="font-size: 1.5rem; font-weight: 700">Legal Notice</h2>
+      <button type="button" data-close-dialog style="color: var(--color-muted-foreground); cursor: pointer; background: none; border: none" aria-label="Close">
+        <svg style="width: 1.25rem; height: 1.25rem" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div style="overflow-y: auto; padding: 2rem 3rem 3rem; display: flex; flex-direction: column; gap: 2rem">
+      <div>
+        <h3 style="font-size: 1.25rem; font-weight: 600">Terms of Service</h3>
+        <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem; line-height: 1.75; color: var(--color-muted-foreground)">
+          <p>By accessing and using the Core platform ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you may not use the Service.</p>
+          <h4 style="font-weight: 600; color: var(--color-foreground); padding-top: 0.5rem">1. Account Registration</h4>
+          <p>You must provide accurate and complete information when creating an account. You are responsible for maintaining the security of your account credentials and for all activities that occur under your account.</p>
+          <h4 style="font-weight: 600; color: var(--color-foreground); padding-top: 0.5rem">2. Acceptable Use</h4>
+          <p>You agree not to use the Service for any unlawful purpose or in any way that could damage, disable, or impair the Service. You may not attempt to gain unauthorized access to any part of the Service or its related systems.</p>
+          <h4 style="font-weight: 600; color: var(--color-foreground); padding-top: 0.5rem">3. Payment Terms</h4>
+          <p>Paid plans are billed in advance on a monthly or annual basis. All fees are non-refundable except as expressly stated in our refund policy. We reserve the right to change pricing with 30 days notice.</p>
+          <h4 style="font-weight: 600; color: var(--color-foreground); padding-top: 0.5rem">4. Termination</h4>
+          <p>Either party may terminate this agreement at any time. Upon termination, your right to use the Service will immediately cease. We will make your data available for export for 30 days after termination.</p>
+        </div>
+      </div>
+      <hr style="border-color: var(--color-border)">
+      <div>
+        <h3 style="font-size: 1.25rem; font-weight: 600">Imprint</h3>
+        <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem; line-height: 1.75; color: var(--color-muted-foreground)">
+          <p><strong style="color: var(--color-foreground)">Core Inc.</strong><br>123 Innovation Drive<br>San Francisco, CA 94105<br>United States</p>
+          <p><strong style="color: var(--color-foreground)">Contact:</strong> hello@acme.example<br><strong style="color: var(--color-foreground)">Registration:</strong> Delaware, USA — File No. 12345678</p>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===== Privacy Modal ===== -->
+  <dialog id="modal-privacy" class="rounded-2xl bg-background text-foreground" style="position: fixed; inset: 0; margin: auto; width: calc(100% - 3rem); max-width: 42rem; max-height: 80vh; padding: 0; overflow: hidden; border: none; font-size: 1rem">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding: 1.5rem 3rem; flex-shrink: 0">
+      <h2 style="font-size: 1.5rem; font-weight: 700">Privacy Policy</h2>
+      <button type="button" data-close-dialog style="color: var(--color-muted-foreground); cursor: pointer; background: none; border: none" aria-label="Close">
+        <svg style="width: 1.25rem; height: 1.25rem" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div style="overflow-y: auto; padding: 2rem 3rem 3rem; display: flex; flex-direction: column; gap: 1rem; line-height: 1.75; color: var(--color-muted-foreground)">
+      <p>Your privacy matters to us. This policy explains what data we collect, why we collect it, and how you can manage your information.</p>
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--color-foreground); padding-top: 0.5rem">Data We Collect</h3>
+      <p>We collect information you provide directly (name, email, payment details) and data generated through your use of the Service (usage logs, device information, IP addresses).</p>
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--color-foreground); padding-top: 0.5rem">How We Use Your Data</h3>
+      <p>We use your data to provide and improve the Service, process payments, send important notifications, and comply with legal obligations. We never sell your personal data to third parties.</p>
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--color-foreground); padding-top: 0.5rem">Your Rights</h3>
+      <p>You have the right to access, correct, or delete your personal data at any time. You can export all your data from the dashboard or contact our support team for assistance.</p>
+    </div>
+  </dialog>
+
+</body>
+</html>

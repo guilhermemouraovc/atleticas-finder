@@ -1,0 +1,18 @@
+{
+  "name": "core-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dark one-page HTML template for consultancies and agencies. Tailwind CSS 4 + vanilla JS.",
+  "scripts": {
+    "dev": "concurrently \"npm run watch\" \"npm run serve\"",
+    "build": "npx @tailwindcss/cli -i css/input.css -o css/styles.css --minify && npx terser js/main.js -o js/main.min.js -c -m",
+    "watch": "npx @tailwindcss/cli -i css/input.css -o css/styles.css --watch",
+    "serve": "browser-sync start --server --files \"*.html, css/styles.css, js/*.js\" --no-notify"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.1.4",
+    "browser-sync": "^3.0.3",
+    "concurrently": "^9.1.2",
+    "terser": "^5.46.1"
+  }
+}

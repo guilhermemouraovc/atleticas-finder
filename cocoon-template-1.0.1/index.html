@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR" style="scroll-behavior: smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atléticas Finder | Busca em tempo real</title>
+  <meta name="description" content="Busque atléticas de medicina com streaming em tempo real via SSE em uma interface futurista baseada no template Cocoon.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23060608'/><path d='M9 20L16 8l7 12' stroke='%23fff' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+  <link rel="preload" href="/assets/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <style>
+    :root {
+      --panel: rgba(255, 255, 255, 0.04);
+      --panel-strong: rgba(255, 255, 255, 0.07);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --accent: #7ce2b3;
+      --accent-soft: rgba(124, 226, 179, 0.16);
+      --accent-blue: #8fb6ff;
+      --danger: #ff8f6b;
+    }
+    body {
+      min-height: 100vh;
+      color: var(--color-foreground);
+      background:
+        radial-gradient(circle at top left, rgba(143, 182, 255, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(124, 226, 179, 0.18), transparent 24%),
+        linear-gradient(180deg, #050608 0%, #08090c 38%, #050608 100%);
+    }
+    .app-shell {
+      position: relative;
+      isolation: isolate;
+    }
+    .mesh {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.7), transparent);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .hero-orb {
+      background:
+        radial-gradient(circle at 35% 35%, rgba(143, 182, 255, 0.35), transparent 32%),
+        radial-gradient(circle at 65% 40%, rgba(124, 226, 179, 0.30), transparent 28%),
+        linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+    }
+    .eyebrow {
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .control-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .metric-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+    .metric-card,
+    .panel-card {
+      border-radius: 1.25rem;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+    }
+    .metric-value {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+    .signal-dot {
+      width: 0.7rem;
+      height: 0.7rem;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 0 rgba(124, 226, 179, 0.5);
+      animation: pulse 1.8s infinite;
+    }
+    .signal-dot.idle {
+      background: var(--accent-blue);
+      box-shadow: none;
+      animation: none;
+    }
+    .signal-dot.done {
+      background: #ffffff;
+      animation: none;
+    }
+    .signal-dot.error {
+      background: var(--danger);
+      animation: none;
+    }
+    .field,
+    .button {
+      min-height: 3.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      transition: border-color 150ms ease, transform 150ms ease, background 150ms ease;
+    }
+    .field {
+      width: 100%;
+      padding: 0 1rem;
+      color: var(--color-foreground);
+      background: rgba(255,255,255,0.04);
+    }
+    .field:focus {
+      outline: none;
+      border-color: rgba(143, 182, 255, 0.6);
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      padding: 0 1.4rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .button:hover {
+      transform: translateY(-1px);
+    }
+    .button-primary {
+      color: #06110d;
+      background: linear-gradient(135deg, var(--accent), #b8f0d6);
+    }
+    .button-secondary {
+      color: var(--color-foreground);
+      background: rgba(255,255,255,0.04);
+    }
+    .button-secondary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-radius: 999px;
+      padding: 0.7rem 1rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .results-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 0.75rem;
+    }
+    .results-table thead th {
+      padding: 0 1rem 0.75rem;
+      color: var(--color-muted-foreground);
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .results-table tbody tr {
+      background: rgba(255,255,255,0.04);
+      outline: 1px solid rgba(255,255,255,0.08);
+    }
+    .results-table tbody td {
+      padding: 1rem;
+      vertical-align: top;
+    }
+    .results-table tbody tr td:first-child {
+      border-top-left-radius: 1rem;
+      border-bottom-left-radius: 1rem;
+    }
+    .results-table tbody tr td:last-child {
+      border-top-right-radius: 1rem;
+      border-bottom-right-radius: 1rem;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 0.28rem 0.72rem;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .link-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0.75rem;
+      min-height: 2.25rem;
+      padding: 0 0.9rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      color: var(--color-foreground);
+      font-size: 0.84rem;
+      font-weight: 600;
+      transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+    }
+    .link-button:hover {
+      border-color: rgba(124, 226, 179, 0.5);
+      background: rgba(124, 226, 179, 0.12);
+      transform: translateY(-1px);
+    }
+    .log-list {
+      display: grid;
+      gap: 0.75rem;
+      max-height: 22rem;
+      overflow: auto;
+    }
+    .log-item {
+      border-radius: 1rem;
+      padding: 0.9rem 1rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .table-wrap {
+      overflow-x: auto;
+    }
+    .empty-state {
+      border-radius: 1.25rem;
+      border: 1px dashed rgba(255,255,255,0.16);
+      padding: 2rem;
+      color: var(--color-muted-foreground);
+      text-align: center;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(124, 226, 179, 0.45); }
+      70% { box-shadow: 0 0 0 12px rgba(124, 226, 179, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(124, 226, 179, 0); }
+    }
+  </style>
+  <script src="/assets/js/main.js" defer></script>
+</head>
+<body class="font-sans antialiased">
+  <div class="app-shell">
+    <div class="mesh"></div>
+
+    <header id="main-header" class="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md transition-[border-color] duration-300" style="border-bottom: 1px solid transparent">
+      <nav id="main-nav" class="relative mx-auto flex max-w-6xl items-center justify-between px-6 pt-10 pb-0 transition-[padding] duration-300">
+        <a href="/" class="flex items-center gap-3 text-xl font-bold tracking-tight">
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 16 12 5l6 11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 16h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+          </span>
+          Atléticas Finder
+        </a>
+
+        <div class="hidden items-center gap-8 md:flex absolute left-1/2 -translate-x-1/2">
+          <a href="#busca" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Busca</a>
+          <a href="#stream" class="text-sm text-muted-foreground hover:text-foreground transition-colors">SSE</a>
+          <a href="#resultados" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Resultados</a>
+        </div>
+
+        <a href="#resultados" class="hidden md:inline-flex items-center rounded-full bg-white px-5 py-2 text-sm font-medium text-black hover:bg-white/90 transition-opacity">Ver tabela</a>
+
+        <button id="mobile-menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu" class="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors md:hidden">
+          <span class="sr-only">Abrir menu</span>
+          <svg aria-hidden="true" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+        </button>
+      </nav>
+
+      <div id="mobile-menu" aria-hidden="true" class="hidden border-t border-border bg-background px-6 py-4 md:hidden">
+        <div class="flex flex-col gap-4">
+          <a href="#busca" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Busca</a>
+          <a href="#stream" class="text-sm text-muted-foreground hover:text-foreground transition-colors">SSE</a>
+          <a href="#resultados" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Resultados</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="py-[calc(40px+5vh)]">
+        <div class="mx-auto max-w-6xl px-6">
+          <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]" data-animate>
+            <div>
+              <span class="eyebrow inline-flex rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-medium">Cocoon Template Adaptado</span>
+              <h1 class="mt-6 max-w-3xl text-4xl font-medium tracking-tight sm:text-5xl lg:text-6xl">
+                Busca de atléticas com interface futurista e resultados pingando ao vivo.
+              </h1>
+              <p class="mt-6 max-w-2xl text-lg text-muted-foreground">
+                O backend usa FastAPI + SSE para streamar cada perfil encontrado sem esperar o scraping inteiro terminar. O frontend só escuta o fluxo e vai preenchendo a tabela na sua frente.
+              </p>
+
+              <div class="mt-8 flex flex-wrap gap-3">
+                <div class="status-pill">
+                  <span class="signal-dot idle" id="status-dot"></span>
+                  <span id="stream-status">Pronto para iniciar uma nova busca</span>
+                </div>
+                <div class="status-pill">
+                  <span class="text-sm text-muted-foreground">Transporte</span>
+                  <strong>SSE / EventSource</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass hero-orb rounded-[2rem] p-6 sm:p-8" data-animate data-delay="1">
+              <div class="panel-card p-5">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm text-muted-foreground">Fluxo da sessão</p>
+                  <span class="tag">Realtime</span>
+                </div>
+                <div class="mt-6 space-y-4">
+                  <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p class="text-sm text-muted-foreground">1. Cliente</p>
+                    <p class="mt-1 text-lg font-medium">Usuário dispara a busca com filtro opcional por UF</p>
+                  </div>
+                  <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p class="text-sm text-muted-foreground">2. Backend</p>
+                    <p class="mt-1 text-lg font-medium">FastAPI abre `/buscar` e faz `yield` de cada perfil</p>
+                  </div>
+                  <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p class="text-sm text-muted-foreground">3. Frontend</p>
+                    <p class="mt-1 text-lg font-medium">Tabela, métricas e log são atualizados sem refresh</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-grid mt-10" data-animate data-delay="2">
+            <article class="metric-card p-6">
+              <p class="text-sm text-muted-foreground">Atléticas recebidas</p>
+              <p class="metric-value mt-4" id="result-count">0</p>
+            </article>
+            <article class="metric-card p-6">
+              <p class="text-sm text-muted-foreground">Queries finalizadas</p>
+              <p class="metric-value mt-4" id="query-progress">0/0</p>
+            </article>
+            <article class="metric-card p-6">
+              <p class="text-sm text-muted-foreground">Filtro ativo</p>
+              <p class="metric-value mt-4 text-[2.2rem]" id="current-filter">ALL</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="busca" class="py-[calc(20px+4vh)]">
+        <div class="mx-auto max-w-6xl px-6">
+          <div class="glass rounded-[2rem] p-6 sm:p-8" data-animate>
+            <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+              <div>
+                <p class="eyebrow text-xs text-muted-foreground">Painel de Busca</p>
+                <h2 class="mt-3 text-3xl font-medium tracking-tight sm:text-4xl">Dispare a busca e acompanhe o stream.</h2>
+                <p class="mt-4 max-w-2xl text-muted-foreground">A busca usa as queries do scraper existente. Se você escolher uma UF do Nordeste, o backend prioriza esse recorte e continua streamando item por item.</p>
+              </div>
+
+              <form id="search-form" class="control-grid self-end">
+                <label>
+                  <span class="mb-3 block text-sm text-muted-foreground">Filtrar por UF</span>
+                  <select id="uf-filter" class="field">
+                    <option value="">Todas as UFs priorizadas</option>
+                  </select>
+                </label>
+                <div class="flex flex-wrap items-end gap-3">
+                  <button id="search-button" class="button button-primary" type="submit">Iniciar busca</button>
+                  <button id="export-button" class="button button-secondary" type="button" disabled>Exportar CSV</button>
+                  <button id="summary-button" class="button button-secondary" type="button" disabled>Ver em lista</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="stream" class="py-[calc(20px+4vh)]">
+        <div class="mx-auto max-w-6xl px-6">
+          <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+            <div class="panel-card p-6 sm:p-8" data-animate>
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <p class="eyebrow text-xs text-muted-foreground">Stream Status</p>
+                  <h2 class="mt-3 text-3xl font-medium tracking-tight">O SSE vai despejando os perfis encontrados.</h2>
+                </div>
+                <span class="tag">FastAPI</span>
+              </div>
+              <p class="mt-4 text-muted-foreground" id="summary-text">Nenhuma busca em andamento.</p>
+              <div class="mt-8 empty-state" id="empty-state">
+                Clique em <strong>Iniciar busca</strong> para abrir a conexão e começar a preencher a tabela.
+              </div>
+            </div>
+
+            <aside class="panel-card p-6 sm:p-8" data-animate data-delay="1">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <p class="eyebrow text-xs text-muted-foreground">Log das Queries</p>
+                  <h2 class="mt-3 text-2xl font-medium tracking-tight">Telemetria da varredura</h2>
+                </div>
+                <span class="tag" id="log-count">0 eventos</span>
+              </div>
+              <div id="query-log" class="log-list mt-6"></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section id="resultados" class="py-[calc(20px+5vh)]">
+        <div class="mx-auto max-w-6xl px-6">
+          <div class="panel-card p-6 sm:p-8" data-animate>
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p class="eyebrow text-xs text-muted-foreground">Resultados</p>
+                <h2 class="mt-3 text-3xl font-medium tracking-tight">Tabela preenchida em tempo real.</h2>
+                <p class="mt-4 text-muted-foreground">Cada linha aparece assim que o backend encontra uma nova atlética relevante.</p>
+              </div>
+              <div class="status-pill">
+                <span class="text-sm text-muted-foreground">Último evento</span>
+                <strong id="last-event">Nenhum</strong>
+              </div>
+            </div>
+
+            <div class="table-wrap mt-8">
+              <table class="results-table">
+                <thead>
+                  <tr>
+                    <th>Perfil</th>
+                    <th>UF</th>
+                    <th>Nordeste</th>
+                    <th>Universidade</th>
+                    <th>Bio / Contexto</th>
+                  </tr>
+                </thead>
+                <tbody id="results-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
