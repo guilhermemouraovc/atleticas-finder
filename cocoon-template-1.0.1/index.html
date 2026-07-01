@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atléticas Finder | Busca em tempo real</title>
-  <meta name="description" content="Busque atléticas de medicina com streaming em tempo real via SSE em uma interface futurista baseada no template Cocoon.">
+  <title>Atléticas Finder | Dados via Supabase</title>
+  <meta name="description" content="Atléticas de medicina do Nordeste e do Brasil, encontradas por um scraper e servidas direto do Supabase em uma interface futurista baseada no template Cocoon.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23060608'/><path d='M9 20L16 8l7 12' stroke='%23fff' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
-  <link rel="preload" href="/assets/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/styles.css">
   <style>
     :root {
       --panel: rgba(255, 255, 255, 0.04);
@@ -239,7 +239,7 @@
       100% { box-shadow: 0 0 0 0 rgba(124, 226, 179, 0); }
     }
   </style>
-  <script src="/assets/js/main.js" defer></script>
+  <script src="/js/main.js" defer></script>
 </head>
 <body class="font-sans antialiased">
   <div class="app-shell">
@@ -259,7 +259,7 @@
 
         <div class="hidden items-center gap-8 md:flex absolute left-1/2 -translate-x-1/2">
           <a href="#busca" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Busca</a>
-          <a href="#stream" class="text-sm text-muted-foreground hover:text-foreground transition-colors">SSE</a>
+          <a href="#stream" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Supabase</a>
           <a href="#resultados" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Resultados</a>
         </div>
 
@@ -274,7 +274,7 @@
       <div id="mobile-menu" aria-hidden="true" class="hidden border-t border-border bg-background px-6 py-4 md:hidden">
         <div class="flex flex-col gap-4">
           <a href="#busca" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Busca</a>
-          <a href="#stream" class="text-sm text-muted-foreground hover:text-foreground transition-colors">SSE</a>
+          <a href="#stream" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Supabase</a>
           <a href="#resultados" class="text-sm text-muted-foreground hover:text-foreground transition-colors">Resultados</a>
         </div>
       </div>
@@ -290,17 +290,17 @@
                 Busca de atléticas com interface futurista e resultados pingando ao vivo.
               </h1>
               <p class="mt-6 max-w-2xl text-lg text-muted-foreground">
-                O backend usa FastAPI + SSE para streamar cada perfil encontrado sem esperar o scraping inteiro terminar. O frontend só escuta o fluxo e vai preenchendo a tabela na sua frente.
+                Um scraper roda toda semana via GitHub Actions e salva os perfis encontrados no Supabase. O frontend é 100% estático: ao carregar a página, ele busca os dados direto na REST API do Supabase e preenche a tabela.
               </p>
 
               <div class="mt-8 flex flex-wrap gap-3">
                 <div class="status-pill">
                   <span class="signal-dot idle" id="status-dot"></span>
-                  <span id="stream-status">Pronto para iniciar uma nova busca</span>
+                  <span id="stream-status">Carregando dados do Supabase...</span>
                 </div>
                 <div class="status-pill">
-                  <span class="text-sm text-muted-foreground">Transporte</span>
-                  <strong>SSE / EventSource</strong>
+                  <span class="text-sm text-muted-foreground">Fonte</span>
+                  <strong>Supabase REST API</strong>
                 </div>
               </div>
             </div>
@@ -308,21 +308,21 @@
             <div class="glass hero-orb rounded-[2rem] p-6 sm:p-8" data-animate data-delay="1">
               <div class="panel-card p-5">
                 <div class="flex items-center justify-between">
-                  <p class="text-sm text-muted-foreground">Fluxo da sessão</p>
-                  <span class="tag">Realtime</span>
+                  <p class="text-sm text-muted-foreground">Arquitetura</p>
+                  <span class="tag">Deploy</span>
                 </div>
                 <div class="mt-6 space-y-4">
                   <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <p class="text-sm text-muted-foreground">1. Cliente</p>
-                    <p class="mt-1 text-lg font-medium">Usuário dispara a busca com filtro opcional por UF</p>
+                    <p class="text-sm text-muted-foreground">1. GitHub Actions</p>
+                    <p class="mt-1 text-lg font-medium">Cron semanal roda o scraper e faz upsert no Supabase</p>
                   </div>
                   <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <p class="text-sm text-muted-foreground">2. Backend</p>
-                    <p class="mt-1 text-lg font-medium">FastAPI abre `/buscar` e faz `yield` de cada perfil</p>
+                    <p class="text-sm text-muted-foreground">2. Supabase</p>
+                    <p class="mt-1 text-lg font-medium">Banco Postgres com leitura pública via anon key</p>
                   </div>
                   <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <p class="text-sm text-muted-foreground">3. Frontend</p>
-                    <p class="mt-1 text-lg font-medium">Tabela, métricas e log são atualizados sem refresh</p>
+                    <p class="text-sm text-muted-foreground">3. Vercel</p>
+                    <p class="mt-1 text-lg font-medium">Frontend estático consome a REST API no carregamento</p>
                   </div>
                 </div>
               </div>
@@ -352,19 +352,19 @@
             <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
               <div>
                 <p class="eyebrow text-xs text-muted-foreground">Painel de Busca</p>
-                <h2 class="mt-3 text-3xl font-medium tracking-tight sm:text-4xl">Dispare a busca e acompanhe o stream.</h2>
-                <p class="mt-4 max-w-2xl text-muted-foreground">A busca usa as queries do scraper existente. Se você escolher uma UF do Nordeste, o backend prioriza esse recorte e continua streamando item por item.</p>
+                <h2 class="mt-3 text-3xl font-medium tracking-tight sm:text-4xl">Filtre os resultados já carregados.</h2>
+                <p class="mt-4 max-w-2xl text-muted-foreground">Todos os perfis salvos no Supabase são carregados uma vez, ao abrir a página. O filtro por UF abaixo não faz nova consulta: ele só recorta os dados que já estão no navegador.</p>
               </div>
 
               <form id="search-form" class="control-grid self-end">
                 <label>
                   <span class="mb-3 block text-sm text-muted-foreground">Filtrar por UF</span>
                   <select id="uf-filter" class="field">
-                    <option value="">Todas as UFs priorizadas</option>
+                    <option value="">Todas as UFs</option>
                   </select>
                 </label>
                 <div class="flex flex-wrap items-end gap-3">
-                  <button id="search-button" class="button button-primary" type="submit">Iniciar busca</button>
+                  <button id="search-button" class="button button-primary" type="submit">Aplicar filtro</button>
                   <button id="export-button" class="button button-secondary" type="button" disabled>Exportar CSV</button>
                   <button id="summary-button" class="button button-secondary" type="button" disabled>Ver em lista</button>
                 </div>
@@ -380,14 +380,14 @@
             <div class="panel-card p-6 sm:p-8" data-animate>
               <div class="flex items-center justify-between gap-4">
                 <div>
-                  <p class="eyebrow text-xs text-muted-foreground">Stream Status</p>
-                  <h2 class="mt-3 text-3xl font-medium tracking-tight">O SSE vai despejando os perfis encontrados.</h2>
+                  <p class="eyebrow text-xs text-muted-foreground">Status da Carga</p>
+                  <h2 class="mt-3 text-3xl font-medium tracking-tight">Dados servidos direto do Supabase.</h2>
                 </div>
-                <span class="tag">FastAPI</span>
+                <span class="tag">Supabase</span>
               </div>
-              <p class="mt-4 text-muted-foreground" id="summary-text">Nenhuma busca em andamento.</p>
+              <p class="mt-4 text-muted-foreground" id="summary-text">Carregando dados...</p>
               <div class="mt-8 empty-state" id="empty-state">
-                Clique em <strong>Iniciar busca</strong> para abrir a conexão e começar a preencher a tabela.
+                Nenhuma atlética encontrada ainda. Rode o scraper (GitHub Actions) para popular o banco.
               </div>
             </div>
 
@@ -411,8 +411,8 @@
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p class="eyebrow text-xs text-muted-foreground">Resultados</p>
-                <h2 class="mt-3 text-3xl font-medium tracking-tight">Tabela preenchida em tempo real.</h2>
-                <p class="mt-4 text-muted-foreground">Cada linha aparece assim que o backend encontra uma nova atlética relevante.</p>
+                <h2 class="mt-3 text-3xl font-medium tracking-tight">Tabela alimentada pelo Supabase.</h2>
+                <p class="mt-4 text-muted-foreground">Os dados vêm do scraper que roda semanalmente via GitHub Actions e grava direto no banco.</p>
               </div>
               <div class="status-pill">
                 <span class="text-sm text-muted-foreground">Último evento</span>
