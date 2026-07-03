@@ -41,13 +41,13 @@ if not exist venv (
 )
 call venv\Scripts\activate.bat
 
-REM --- 3. Dependencias (instala so na primeira vez) ---
-REM ponytail: marcador simples; se requirements.txt mudar, apague venv\.installed
-if not exist venv\.installed (
+REM --- 3. Dependencias (reinstala so quando o requirements.txt muda) ---
+fc /b requirements.txt venv\.installed >nul 2>&1
+if errorlevel 1 (
     echo -^> Instalando dependencias...
     python -m pip install --quiet --upgrade pip
     python -m pip install --quiet -r requirements.txt
-    echo ok> venv\.installed
+    copy /y requirements.txt venv\.installed >nul
     echo Dependencias instaladas.
 ) else (
     echo Dependencias ja estao em dia.

@@ -5,16 +5,6 @@
 
   document.documentElement.classList.add("js");
 
-  // ---------------------------------------------------------------------
-  // Configuração do Supabase
-  // ---------------------------------------------------------------------
-  // A "anon key" é pública por design (protegida pelas RLS policies do
-  // banco, que só permitem SELECT). Substitua os dois valores abaixo pelos
-  // dados do seu projeto Supabase antes do deploy. Veja DEPLOY.md.
-  var SUPABASE_URL = "https://hpryzimlhxgvlublyqfb.supabase.co";
-  var SUPABASE_ANON_KEY = "sb_publishable_pVGqJ3xBpKCYTqH-sgB37w_u0vEl_g-";
-  var SUPABASE_TABLE = "atleticas";
-
   function setupNavbar() {
     var nav = document.getElementById("main-nav");
     var header = document.getElementById("main-header");
@@ -108,29 +98,44 @@
     if (!form || !ufFilter || !resultsBody) return;
 
     var state = {
-      allResults: [],
-      filtered: [],
-      summaryWindow: null
+      source: null,
+      summaryWindow: null,
+      results: [],
+      queryCount: 0,
+      queryDone: 0,
+      streamCompleted: false
     };
+
+    fetch("/config")
+      .then(function (response) { return response.json(); })
+      .then(function (config) {
+        (config.ufs || []).forEach(function (uf) {
+          var option = document.createElement("option");
+          option.value = uf;
+          option.textContent = uf;
+          ufFilter.appendChild(option);
+        });
+      })
+      .catch(function () {});
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
-      applyFilter();
-    });
-
-    ufFilter.addEventListener("change", function () {
-      applyFilter();
+      startSearch();
     });
 
     exportButton.addEventListener("click", function () {
-      if (!state.filtered.length) return;
+      if (!state.results.length) return;
 
-      var fields = ["username", "url", "estado", "nordeste", "universidade", "categoria", "score", "bio"];
-      var rows = [fields];
-      state.filtered.forEach(function (profile) {
-        rows.push(fields.map(function (field) {
-          return profile[field] === null || profile[field] === undefined ? "" : profile[field];
-        }));
+      var rows = [["username", "url", "estado", "nordeste", "universidade", "bio"]];
+      state.results.forEach(function (profile) {
+        rows.push([
+          profile.username || "",
+          profile.url || "",
+          profile.estado || "",
+          profile.nordeste || "",
+          profile.universidade || "",
+          profile.bio || ""
+        ]);
       });
 
       var csv = rows.map(function (row) {
@@ -143,7 +148,7 @@
       var url = URL.createObjectURL(blob);
       var link = document.createElement("a");
       link.href = url;
-      link.download = "atleticas.csv";
+      link.download = "atleticas_sse.csv";
       link.click();
       URL.revokeObjectURL(url);
     });
@@ -154,116 +159,32 @@
       });
     }
 
-    loadData();
+    function resetUI() {
+      if (state.source) {
+        state.source.close();
+      }
 
-    // -----------------------------------------------------------------
-    // Carregamento dos dados (Supabase REST API)
-    // -----------------------------------------------------------------
-    function loadData() {
-      setSignal("running");
-      streamStatus.textContent = "Carregando atléticas do Supabase...";
-      summaryText.textContent = "Buscando os dados mais recentes salvos pelo scraper.";
-      searchButton.disabled = true;
+      state.source = null;
+      state.results = [];
+      state.queryCount = 0;
+      state.queryDone = 0;
+      state.streamCompleted = false;
+
+      resultsBody.innerHTML = "";
+      queryLog.innerHTML = "";
+      resultCount.textContent = "0";
+      queryProgress.textContent = "0/0";
+      currentFilter.textContent = ufFilter.value || "ALL";
+      streamStatus.textContent = "Conectando ao stream SSE...";
+      summaryText.textContent = "Inicializando uma nova sessão de busca.";
+      logCount.textContent = "0 eventos";
+      lastEvent.textContent = "start";
+      emptyState.hidden = false;
       exportButton.disabled = true;
       if (summaryButton) summaryButton.disabled = true;
-      lastEvent.textContent = "load";
-
-      var endpoint = SUPABASE_URL + "/rest/v1/" + SUPABASE_TABLE + "?select=*&order=estado.asc";
-
-      fetch(endpoint, {
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: "Bearer " + SUPABASE_ANON_KEY
-        }
-      })
-        .then(function (response) {
-          if (!response.ok) {
-            throw new Error("HTTP " + response.status + " ao consultar o Supabase.");
-          }
-          return response.json();
-        })
-        .then(function (rows) {
-          state.allResults = Array.isArray(rows) ? rows : [];
-          populateUfOptions(state.allResults);
-          searchButton.disabled = false;
-          addLog("Dados carregados", state.allResults.length + " atlética(s) recebida(s) do Supabase.");
-          applyFilter();
-        })
-        .catch(function (error) {
-          searchButton.disabled = false;
-          streamStatus.textContent = "Falha ao carregar dados do Supabase.";
-          summaryText.textContent = "Verifique SUPABASE_URL / SUPABASE_ANON_KEY em js/main.js e as policies de leitura da tabela.";
-          lastEvent.textContent = "error";
-          setSignal("error");
-          addLog("Erro ao carregar", error.message || String(error));
-        });
-    }
-
-    function populateUfOptions(rows) {
-      var current = ufFilter.value;
-      var estados = Array.from(new Set(
-        rows.map(function (row) { return row.estado; }).filter(Boolean)
-      )).sort();
-
-      ufFilter.innerHTML = '<option value="">Todas as UFs</option>';
-      estados.forEach(function (uf) {
-        var option = document.createElement("option");
-        option.value = uf;
-        option.textContent = uf;
-        ufFilter.appendChild(option);
-      });
-
-      if (current && estados.indexOf(current) !== -1) {
-        ufFilter.value = current;
-      }
-    }
-
-    // -----------------------------------------------------------------
-    // Filtro client-side (não dispara nova requisição)
-    // -----------------------------------------------------------------
-    function applyFilter() {
-      var uf = ufFilter.value;
-      state.filtered = uf
-        ? state.allResults.filter(function (row) { return row.estado === uf; })
-        : state.allResults.slice();
-
-      renderTable(state.filtered);
-
-      currentFilter.textContent = uf || "ALL";
-      resultCount.textContent = String(state.filtered.length);
-      queryProgress.textContent = state.filtered.length + "/" + state.allResults.length;
-      exportButton.disabled = state.filtered.length === 0;
-      if (summaryButton) summaryButton.disabled = state.filtered.length === 0;
-      emptyState.hidden = state.filtered.length !== 0;
-
-      streamStatus.textContent = state.allResults.length
-        ? state.filtered.length + " de " + state.allResults.length + " atlética(s) exibida(s)."
-        : "Nenhuma atlética encontrada no banco ainda.";
-      summaryText.textContent = "Dados carregados do Supabase. O filtro de UF é aplicado localmente, sem nova consulta.";
-      lastEvent.textContent = "filter";
-      setSignal(state.filtered.length ? "done" : "idle");
-      addLog("Filtro aplicado", (uf || "Todas as UFs") + ": " + state.filtered.length + " resultado(s).");
-    }
-
-    function renderTable(rows) {
-      resultsBody.innerHTML = "";
-      rows.forEach(function (profile) {
-        addRow(profile);
-      });
-    }
-
-    function addRow(profile) {
-      var profileUrl = profile.url || buildInstagramUrl(profile.username);
-
-      var row = document.createElement("tr");
-      row.innerHTML = [
-        "<td><div class=\"font-medium\">" + escapeHtml(profile.username || "") + "</div><a class=\"link-button\" href=\"" + escapeAttr(profileUrl || "#") + "\" target=\"_blank\" rel=\"noreferrer\">Abrir no Instagram</a></td>",
-        "<td>" + escapeHtml(profile.estado || "--") + "</td>",
-        "<td>" + (profile.nordeste ? "<span class=\"tag\">Nordeste</span>" : "--") + "</td>",
-        "<td>" + escapeHtml(profile.universidade || "--") + "</td>",
-        "<td class=\"text-sm text-muted-foreground\">" + escapeHtml(profile.bio || "Sem bio capturada") + "</td>"
-      ].join("");
-      resultsBody.appendChild(row);
+      searchButton.disabled = true;
+      searchButton.textContent = "Buscando...";
+      setSignal("running");
     }
 
     function setSignal(mode) {
@@ -281,13 +202,102 @@
       logCount.textContent = queryLog.childElementCount + " eventos";
     }
 
+    function addRow(profile) {
+      state.results.push(profile);
+      var profileUrl = profile.url || buildInstagramUrl(profile.username);
+
+      var row = document.createElement("tr");
+      row.innerHTML = [
+        "<td><div class=\"font-medium\">" + escapeHtml(profile.username || "") + "</div><a class=\"link-button\" href=\"" + escapeAttr(profileUrl || "#") + "\" target=\"_blank\" rel=\"noreferrer\">Abrir no Instagram</a></td>",
+        "<td>" + escapeHtml(profile.estado || "--") + "</td>",
+        "<td>" + (profile.nordeste ? "<span class=\"tag\">Nordeste</span>" : "--") + "</td>",
+        "<td>" + escapeHtml(profile.universidade || "--") + "</td>",
+        "<td class=\"text-sm text-muted-foreground\">" + escapeHtml(profile.bio || "Sem bio capturada") + "</td>"
+      ].join("");
+      resultsBody.appendChild(row);
+
+      resultCount.textContent = String(state.results.length);
+      exportButton.disabled = false;
+      emptyState.hidden = true;
+    }
+
+    function startSearch() {
+      resetUI();
+
+      var query = ufFilter.value ? "?uf=" + encodeURIComponent(ufFilter.value) : "";
+      var source = new EventSource("/buscar" + query);
+      state.source = source;
+
+      source.addEventListener("start", function (event) {
+        var payload = JSON.parse(event.data);
+        state.queryCount = payload.query_count || 0;
+        queryProgress.textContent = "0/" + state.queryCount;
+        streamStatus.textContent = "Stream conectado. Rodando " + state.queryCount + " queries.";
+        summaryText.textContent = "A API está varrendo resultados e vai emitir um evento para cada perfil novo.";
+        addLog("Busca iniciada", "Filtro " + (payload.uf || "ALL") + " com " + state.queryCount + " queries.");
+      });
+
+      source.addEventListener("profile", function (event) {
+        var profile = JSON.parse(event.data);
+        addRow(profile);
+        streamStatus.textContent = "Recebendo perfis em tempo real.";
+        lastEvent.textContent = "profile";
+      });
+
+      source.addEventListener("query_done", function (event) {
+        var payload = JSON.parse(event.data);
+        state.queryDone += 1;
+        queryProgress.textContent = state.queryDone + "/" + state.queryCount;
+        addLog("Query finalizada", "+" + payload.new_items + " nova(s): " + payload.query);
+        lastEvent.textContent = "query_done";
+      });
+
+      source.addEventListener("query_error", function (event) {
+        var payload = JSON.parse(event.data);
+        state.queryDone += 1;
+        queryProgress.textContent = state.queryDone + "/" + state.queryCount;
+        addLog("Erro de query", payload.message + " | " + payload.query);
+        lastEvent.textContent = "query_error";
+      });
+
+      source.addEventListener("done", function (event) {
+        var payload = JSON.parse(event.data);
+        state.streamCompleted = true;
+        searchButton.disabled = false;
+        searchButton.textContent = "Iniciar busca";
+        if (summaryButton) summaryButton.disabled = !state.results.length;
+        streamStatus.textContent = "Busca finalizada com " + payload.total_found + " atléticas.";
+        summaryText.textContent = "Stream encerrado com sucesso. Você pode exportar o CSV ou iniciar outra busca.";
+        lastEvent.textContent = "done";
+        setSignal("done");
+        addLog("Busca finalizada", payload.total_found + " perfis únicos recebidos.");
+        source.close();
+      });
+
+      source.onerror = function () {
+        if (state.streamCompleted) return;
+        searchButton.disabled = false;
+        searchButton.textContent = "Tentar novamente";
+        streamStatus.textContent = "A conexão SSE falhou antes do fim da busca.";
+        summaryText.textContent = "Verifique o backend FastAPI e reinicie a busca.";
+        lastEvent.textContent = "error";
+        setSignal("error");
+        if (summaryButton) summaryButton.disabled = !state.results.length;
+        addLog("Falha no stream", "O EventSource perdeu a conexão com o backend.");
+        source.close();
+      };
+    }
+
     function ensureSummaryWindow() {
       if (state.summaryWindow && !state.summaryWindow.closed) {
-        renderSummaryResults(state.summaryWindow);
+        renderSummaryLoading(state.summaryWindow);
         return state.summaryWindow;
       }
 
       state.summaryWindow = window.open("", "_blank");
+      if (state.summaryWindow) {
+        renderSummaryLoading(state.summaryWindow);
+      }
       return state.summaryWindow;
     }
 
@@ -298,10 +308,21 @@
       summaryWindow.focus();
     }
 
+    function renderSummaryLoading(targetWindow) {
+      if (!targetWindow) return;
+      targetWindow.document.open();
+      targetWindow.document.write(buildSummaryHtml({
+        title: "Busca em andamento",
+        subtitle: "Aguarde o fim da varredura para ver a lista consolidada.",
+        rows: []
+      }));
+      targetWindow.document.close();
+    }
+
     function renderSummaryResults(targetWindow) {
       if (!targetWindow) return;
 
-      var rows = state.filtered.map(function (profile) {
+      var rows = state.results.map(function (profile) {
         return {
           username: profile.username || "",
           estado: profile.estado || "--",
@@ -331,7 +352,7 @@
           "<td><a href=\"" + escapeAttr(row.url) + "\" target=\"_blank\" rel=\"noreferrer\">Abrir Instagram</a></td>",
           "</tr>"
         ].join("");
-      }).join("") : "<tr><td colspan=\"5\">Nenhum perfil encontrado.</td></tr>";
+      }).join("") : "<tr><td colspan=\"5\">Nenhum perfil encontrado ainda.</td></tr>";
 
       return [
         "<!DOCTYPE html>",

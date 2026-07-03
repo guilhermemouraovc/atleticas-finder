@@ -12,7 +12,6 @@ import asyncio
 import csv
 import inspect
 import json
-import os
 import random
 import re
 from collections.abc import Awaitable, Callable
@@ -524,63 +523,6 @@ def print_results(profiles: list[dict]) -> None:
     print("\n  Salvos em: atleticas_encontradas.csv  |  atleticas_encontradas.json")
 
 
-# ---------------------------------------------------------------------------
-# SUPABASE
-# ---------------------------------------------------------------------------
-
-SUPABASE_TABLE = "atleticas"
-SUPABASE_FIELDS = [
-    "username",
-    "url",
-    "estado",
-    "nordeste",
-    "universidade",
-    "categoria",
-    "score",
-    "motivos_match",
-    "motivos_exclusao",
-    "bio",
-]
-
-
-def save_to_supabase(profiles: list[dict], supabase_url: str, supabase_key: str) -> int:
-    """Faz upsert dos perfis encontrados na tabela `atleticas` do Supabase.
-
-    Usa `username` como chave de conflito, então rodar o scraper várias vezes
-    (ex.: toda semana via GitHub Actions) atualiza os registros existentes em
-    vez de duplicá-los.
-
-    Retorna a quantidade de linhas enviadas. Não faz nada (retorna 0) se a
-    lista de perfis estiver vazia.
-    """
-    if not profiles:
-        print("Nenhum perfil para enviar ao Supabase.")
-        return 0
-
-    if not supabase_url or not supabase_key:
-        raise ValueError("supabase_url e supabase_key são obrigatórios para save_to_supabase().")
-
-    from supabase import Client, create_client
-
-    client: Client = create_client(supabase_url, supabase_key)
-
-    rows = []
-    for profile in profiles:
-        row = {field: profile.get(field) for field in SUPABASE_FIELDS}
-        rows.append(row)
-
-    # Envia em lotes para evitar payloads gigantes em buscas grandes.
-    batch_size = 200
-    sent = 0
-    for start in range(0, len(rows), batch_size):
-        batch = rows[start : start + batch_size]
-        client.table(SUPABASE_TABLE).upsert(batch, on_conflict="username").execute()
-        sent += len(batch)
-
-    print(f"Supabase: {sent} perfil(is) enviados (upsert por username) para '{SUPABASE_TABLE}'.")
-    return sent
-
-
 async def main() -> None:
     print("═" * 65)
     print("  VARREDURA DE ATLÉTICAS DE MEDICINA — async")
@@ -590,16 +532,6 @@ async def main() -> None:
     profiles = await run_search()
     save_results(profiles)
     print_results(profiles)
-
-    supabase_url = os.environ.get("SUPABASE_URL")
-    supabase_key = os.environ.get("SUPABASE_SERVICE_KEY")
-    if supabase_url and supabase_key:
-        save_to_supabase(profiles, supabase_url, supabase_key)
-    else:
-        print(
-            "\nSUPABASE_URL / SUPABASE_SERVICE_KEY não configurados — "
-            "pulando envio ao Supabase (apenas CSV/JSON locais foram salvos)."
-        )
 
 
 if __name__ == "__main__":
